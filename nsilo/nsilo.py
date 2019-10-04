@@ -14,6 +14,9 @@ BASEOPTS = {"version": 1, "type": "xml", "key": apikey}
 class NameSiloError(Exception):
     pass
 
+class HostNotFoundError(Exception):
+    pass
+
 
 class DomainInfo:
     def __init__(self, resource_record: etree._Element):
@@ -91,8 +94,19 @@ class NameSilo:
         )
         return res.findtext(".//reply/detail") == "success"
 
-    def dns_update_record(self, domain: str, host: str, value: str, ipv4=True):
+    def _dns_get_id(self, domain, host):
+        records = self.dns_list_records(domain)
+        for record in records:
+            if record.host == host:
+                return record.id
+        else:
+            raise HostNotFoundError(host)           
+
+    def dns_update_record(self, domain: str, host: str, value: str, ipv4=True, dns_id=None):
         rrtype = "A" if ipv4 else "AAAA"
+        if dns_id is None:
+            dns_id = self._dns_get_id(domain, host)
         res = self._send(
-            "dnsUpdateRecord", domain=domain, rrtype=rrtype, rrhost=host, rrvalue=value
+            "dnsUpdateRecord", domain=domain, rrtype=rrtype, rrhost=host, rrvalue=value, rrid=dns_id
         )
+        return res
