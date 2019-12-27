@@ -9,5 +9,5 @@ setup(
     author="Nicholas Orta",
     author_email="nickorta12@gmail.com",
     packages=find_packages(),
-    install_requires=["lxml", "requests"],
+    install_requires=["lxml", "requests", "aiohttp", "PrettyTable"],
 )
