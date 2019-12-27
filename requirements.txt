@@ -1,0 +1,4 @@
+# Development requirements for this project
+-e .
+pytest
+sphinx
